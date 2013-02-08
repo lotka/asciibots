@@ -88,8 +88,9 @@ int main()
 
         for(k=77; k<objectNumber; ++k)
             printf("type=%d x=%d y=%d\n",object_list[k].type, object_list[k].x, object_list[k].y);
-        Sleep(50);
-        system("cls");
+        //Sleep(50);
+        sleep(50);
+        system("clear");
 
     }
 
@@ -133,7 +134,7 @@ int updatePlayer(object *currentObject)
     if((*currentObject).hp <= 0)
     {
         destructor((*currentObject).objId);
-        Beep(500,100);
+        //Beep(500,100);
 
     }
     switch(aiChoice)
