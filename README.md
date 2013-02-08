@@ -3,7 +3,10 @@ asciibots
 
 A few ascii characters convene in a dark cave to fight till the last man.
 
-Written completely in C, the idea is that little bots try to fight each other. Each turn they are allowed to do one only one operation, examples are movement, fire bullet or lay mine.
+Written in C, the idea is that little bots try to fight each other in a small 2d world. A bot is just a function, at the moment these are very basic but the plan is to give them enough mental power to be able to produce an interesting battle.
 
-Each bot has its own function which is written by each player, this works by giving your bots object (yes we have implemented objects in C because we are slightly insane) a pointer to that function. Then everything plays out on the screen.
+The bots can only do one operation each turn, for example:
+* Move (by one unit up, left, down or right)
+* Fire bullet (up, left, down or right)
+* Lay mine (not yet implemented)
 
