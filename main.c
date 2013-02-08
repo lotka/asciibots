@@ -25,6 +25,10 @@ char **map;   //Grid which is printed
 
 int main()
 {
+    #ifndef _WIN32
+        initscr();
+        raw();
+    #endif
     int i,j,k;
 
     for(i=0; i<xsize; ++i)
@@ -79,22 +83,27 @@ int main()
         {
             for(k=0; k<xsize; ++k)
             {
-                printf("%c", map[k][j]);
+                PRINT("%c", map[k][j]);
             }
-            printf("\n");
+            PRINT("\n");
         }
 
-        printf("objectNumber = %d\n", objectNumber);
+        PRINT("objectNumber = %d\n", objectNumber);
 
-        for(k=77; k<objectNumber; ++k)
-            printf("type=%d x=%d y=%d\n",object_list[k].type, object_list[k].x, object_list[k].y);
-        //Sleep(50);
-        sleep(50);
-        system("clear");
-
+        for(k=77; k<objectNumber; ++k){
+            PRINT("type=%d x=%d y=%d\n",object_list[k].type, object_list[k].x, object_list[k].y);
+        }
+        #ifdef _WIN32
+            Sleep(50);
+            system("cls");
+        #else
+            //PRINT("press Q to quit\n");
+            refresh();
+            mvprintw(0,0, "");
+            usleep(100000);
+        #endif
     }
-
-
+    endwin();
     return 0;
 }
 
@@ -134,7 +143,9 @@ int updatePlayer(object *currentObject)
     if((*currentObject).hp <= 0)
     {
         destructor((*currentObject).objId);
-        //Beep(500,100);
+        #ifdef _WIN32
+            Beep(500,100);
+        #endif
 
     }
     switch(aiChoice)

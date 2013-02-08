@@ -1,6 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef _WIN32
+	#include <windows.h>
+	#define PRINT(...) printf(__VA_ARGS__)
+#else
+	#include <ncurses.h>
+	#define PRINT(...) printw(__VA_ARGS__)
+#endif
+
 typedef struct
 {
     int type;
