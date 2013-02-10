@@ -20,6 +20,8 @@ typedef struct
     int i;
 } object;
 
+
+//Note that loadMap and defaultMap are probably bad names. They should  be load object_list & default object_list.
 void loadMap();
 void defaultMap();
 
