@@ -15,36 +15,38 @@
    999 - call the police
 */
 
-
 int objectNumber=0;  //Counts number of objects
 
-int xsize = 20;
-int ysize = 20;
+int xsize; //these get set in either loadMap() or defaultMap()
+int ysize;
 
 char **map;   //Grid which is printed
 
 int main()
 {
-    #ifndef _WIN32
-        initscr();
-        raw();
-    #endif
+#ifndef _WIN32
+    initscr();
+    raw();
+#endif
     int i,j,k;
+    char c,d;
 
-    for(i=0; i<xsize; ++i)
+    do
     {
-        newWall(i,0);
-
-        newWall(i,ysize-1);
+        printf("Do you want to load a map from file (y/n) (default is basic square):");
+        c = getchar();
+        d = getchar(); //needed to eat the '\0' that gets entered
     }
+    while(c != 'y' && c  != 'n' && c != 'Y' && c != 'N');
 
-    for(i=1; i<ysize-1; ++i)
+    if(c == 'y' ||c == 'Y')
     {
-        newWall(0,i);
-
-        newWall(xsize-1,i);
+        loadMap();
     }
-
+    else if (c == 'n' ||c == 'N')
+    {
+        defaultMap();
+    }
 
     map = malloc((xsize+2)*sizeof(char *));
     for(i=0; i<xsize+2; ++i)
@@ -53,9 +55,6 @@ int main()
     }
     //newBullet(0,0,6);     //Test bullets
     //newBullet(18,1,6);
-    newPlayer(10,8,&greg);
-    newPlayer(15,14,&helen);
-
 
     while(1)
     {
@@ -90,21 +89,88 @@ int main()
 
         PRINT("objectNumber = %d\n", objectNumber);
 
-        for(k=77; k<objectNumber; ++k){
+        for(k=77; k<objectNumber; ++k)
+        {
             PRINT("type=%d x=%d y=%d\n",object_list[k].type, object_list[k].x, object_list[k].y);
         }
-        #ifdef _WIN32
-            Sleep(50);
-            system("cls");
-        #else
-            //PRINT("press Q to quit\n");
-            refresh();
-            mvprintw(0,0, "");
-            usleep(100000);
-        #endif
+#ifdef _WIN32
+        Sleep(50);
+        system("cls");
+#else
+        //PRINT("press Q to quit\n");
+        refresh();
+        mvprintw(0,0, "");
+        usleep(100000);
+#endif
     }
     endwin();
     return 0;
+}
+
+void loadMap()
+{
+
+    /*A file should consist of the following:
+        Line 0: an int giving the xsize
+        Line 1: an int giving the ysize
+        Rest of file: each line should contain four ints separated by spaces representing:
+            Object type
+            Object x location (0 <= x < xsize)
+            Object y location (0 <= y < ysize)
+            Object direction (ignored if a wall should be 2,4,6 or 8 for a bullet)
+    */
+    char * fileName = malloc(256 * sizeof(char));
+    FILE * fileP = NULL;
+    int type;
+    int direction;
+    int x,y;
+
+
+    while(fileP == NULL)
+    {
+        printf("Please enter the name of the map:");
+        scanf("%s",fileName);
+        fileP = fopen(fileName,"r");
+    }
+    free(fileName);
+
+    fscanf(fileP,"%d\n%d\n", &xsize,&ysize);
+
+    while(!feof(fileP)){
+        fscanf(fileP,"%d %d %d %d\n",&type,&x,&y,&direction);
+        switch (type){  //when mines are implemented this needs extending
+            case 1: newWall(x,y);
+                break;
+            case 2: newBullet(x,y,direction);
+                break;
+        }
+    }
+    close(fileP);
+
+    return;
+}
+
+void defaultMap()
+{
+    int i;
+    xsize = 20;
+    ysize = 20;
+    for(i=0; i<xsize; ++i)
+    {
+        newWall(i,0);
+
+        newWall(i,ysize-1);
+    }
+
+    for(i=1; i<ysize-1; ++i)
+    {
+        newWall(0,i);
+
+        newWall(xsize-1,i);
+    }
+
+    newPlayer(1,1,&greg);
+    newPlayer(xsize-2,ysize-2,&helen);
 }
 
 int update(object *currentObject)
@@ -143,9 +209,9 @@ int updatePlayer(object *currentObject)
     if((*currentObject).hp <= 0)
     {
         destructor((*currentObject).objId);
-        #ifdef _WIN32
-            Beep(500,100);
-        #endif
+#ifdef _WIN32
+        Beep(500,100);
+#endif
 
     }
     switch(aiChoice)
@@ -417,7 +483,7 @@ int helen(int x,int y, int objId, int ask)
     ++object_list[objId].i;
 
     if(map[object_list[objId].x-1][object_list[objId].y]=='.')
-       return 2;
+        return 2;
 
     if(object_list[objId].i % 2 == 0)
         return 8;

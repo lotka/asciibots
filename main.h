@@ -20,6 +20,9 @@ typedef struct
     int i;
 } object;
 
+void loadMap();
+void defaultMap();
+
 void newBullet(int,int,int);
 void newWall(int,int);
 void newPlayer(int,int ,int (*)(int,int,int,int));
