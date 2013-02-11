@@ -141,7 +141,7 @@ void loadMap()
         switch (type){  //when mines are implemented this needs extending
             case 1: newWall(x,y);
                 break;
-            case 2: newBullet(x,y,direction);
+            case 3: newBullet(x,y,direction);
                 break;
         }
     }
@@ -439,7 +439,7 @@ void newWall(int x, int y)
     object_list[objectNumber-1].objId = objectNumber-1;
     object_list[objectNumber-1].x=x;
     object_list[objectNumber-1].y=y;
-    object_list[objectNumber-1].symbol='Û';
+    object_list[objectNumber-1].symbol='ï¿½';
 
 }
 
