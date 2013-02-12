@@ -8,5 +8,5 @@ Written in C, the idea is that little bots try to fight each other in a small 2d
 The bots can only do one operation each turn, for example:
 * Move (by one unit up, left, down or right)
 * Fire bullet (up, left, down or right)
-* Lay mine (not yet implemented)
+* Lay mine
 
