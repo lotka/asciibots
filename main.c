@@ -20,7 +20,7 @@ int objectNumber=0;  //Counts number of objects
 int xsize; //these get set in either loadMap() or defaultMap()
 int ysize;
 
-char **map;   //Grid which is printed
+object *object_list;   //Stores all objects.
 
 int main()
 {
@@ -74,7 +74,10 @@ int main()
 
         for(i=0; i<objectNumber; ++i)
         {
-            map[object_list[i].x][object_list[i].y]=object_list[i].symbol;  //Looks through all the objects and places their symbol in their respective position.
+            if(object_list[i].type != 4)
+            {
+               map[object_list[i].x][object_list[i].y]=object_list[i].symbol;  //Looks through all the objects and places their symbol in their respective position.
+            }
         }
 
         //Reprint the map
@@ -89,10 +92,10 @@ int main()
 
         PRINT("objectNumber = %d\n", objectNumber);
 
-        for(k=77; k<objectNumber; ++k)
-        {
-            PRINT("type=%d x=%d y=%d\n",object_list[k].type, object_list[k].x, object_list[k].y);
-        }
+       // for(k=77; k<objectNumber; ++k)
+      //  {
+     //       PRINT("type=%d x=%d y=%d\n",object_list[k].type, object_list[k].x, object_list[k].y);
+     //   }
 #ifdef _WIN32
         Sleep(50);
         system("cls");
@@ -169,8 +172,11 @@ void defaultMap()
         newWall(xsize-1,i);
     }
 
-    newPlayer(1,1,&greg);
-    newPlayer(xsize-2,ysize-2,&helen);
+    newPlayer(1,ysize -4,&greg);
+    newPlayer(xsize-2,ysize-2,&greg);
+
+    newMine(1,3);
+    newMine(1,1);
 }
 
 int update(object *currentObject)
@@ -186,6 +192,9 @@ int update(object *currentObject)
         updateBullet(currentObject);
         updateBullet(currentObject);
         break;
+    case 4:
+        updateMine(currentObject);
+        break;
     default:
         printf("Unknown object type found. Was it Greg?");
         break;
@@ -195,7 +204,7 @@ int update(object *currentObject)
 
 int updatePlayer(object *currentObject)
 {
-    int aiChoice = ((*currentObject).ai)((*currentObject).x,(*currentObject).y,(*currentObject).objId ,0);
+    int aiChoice = ((*currentObject).ai)((*currentObject).x,(*currentObject).y,currentObject ,0);
     int i;
     //printf("%c", aiChoice);
     /*
@@ -289,12 +298,16 @@ int updatePlayer(object *currentObject)
         newBullet((*currentObject).x,(*currentObject).y-1,8);
         break;
     case 200:
+        newMine((*currentObject).x,(*currentObject).y+1);
         break;
     case 400:
+        newMine((*currentObject).x-1,(*currentObject).y);
         break;
     case 600:
+        newMine((*currentObject).x+1,(*currentObject).y);
         break;
     case 800:
+        newMine((*currentObject).x,(*currentObject).y-1);
         break;
     case 42:
         break;
@@ -405,6 +418,46 @@ int updateBullet(object *currentObject)
     return 0;
 }
 
+int updateMine(object *currentObject)
+{
+    int i;
+    for(i=0;i<objectNumber;++i){
+        if(object_list[i].type == 2 && object_list[i].x == (*currentObject).x && object_list[i].y == (*currentObject).y){
+            object_list[i].hp = object_list[i].hp - 5;
+            destructor((*currentObject).objId);
+        }
+    }
+
+    return 0;
+}
+
+void newWall(int x, int y)
+{
+
+    ++objectNumber;
+
+    object_list = realloc(object_list,objectNumber*sizeof(object));
+    object_list[objectNumber-1].type=1;
+    object_list[objectNumber-1].objId = objectNumber-1;
+    object_list[objectNumber-1].x=x;
+    object_list[objectNumber-1].y=y;
+    object_list[objectNumber-1].symbol='²';
+
+}
+
+void newPlayer(int x, int y, int (*newFunct)(int,int,object *,int))
+{
+    ++objectNumber;
+    object_list = realloc(object_list,objectNumber*sizeof(object));
+    object_list[objectNumber-1].type=2;
+    object_list[objectNumber-1].objId = objectNumber-1;
+    object_list[objectNumber-1].x=x;
+    object_list[objectNumber-1].y=y;
+    object_list[objectNumber-1].hp=10;
+    object_list[objectNumber-1].ai=newFunct;
+    object_list[objectNumber-1].symbol=(*newFunct)(0,0,&object_list[objectNumber-1],1);
+}
+
 void newBullet(int x, int y, int direction)
 {
     int i;
@@ -429,31 +482,25 @@ void newBullet(int x, int y, int direction)
 
 }
 
-void newWall(int x, int y)
+void newMine(int x, int y)
 {
+    int i;
 
+    for(i=0; i<objectNumber; ++i)
+    {
+        if( ((object_list[i].x) == x) && ((object_list[i].y) == y) && (((object_list[i].type) == 4) || ((object_list[i].type) == 1)))
+        {
+            // printf("There was a wall there!\n");
+            return;
+        }
+    }
     ++objectNumber;
-
     object_list = realloc(object_list,objectNumber*sizeof(object));
-    object_list[objectNumber-1].type=1;
+    object_list[objectNumber-1].type=4;
     object_list[objectNumber-1].objId = objectNumber-1;
     object_list[objectNumber-1].x=x;
     object_list[objectNumber-1].y=y;
-    object_list[objectNumber-1].symbol='�';
-
-}
-
-void newPlayer(int x, int y, int (*newFunct)(int,int,int,int))
-{
-    ++objectNumber;
-    object_list = realloc(object_list,objectNumber*sizeof(object));
-    object_list[objectNumber-1].type=2;
-    object_list[objectNumber-1].objId = objectNumber-1;
-    object_list[objectNumber-1].x=x;
-    object_list[objectNumber-1].y=y;
-    object_list[objectNumber-1].hp=10;
-    object_list[objectNumber-1].ai=newFunct;
-    object_list[objectNumber-1].symbol=(*newFunct)(0,0,0,1);
+    object_list[objectNumber-1].symbol='x';
 }
 
 void destructor(int n)
@@ -470,41 +517,4 @@ void destructor(int n)
     object_list = realloc(object_list, (objectNumber)*sizeof(object));
 }
 
-int helen(int x,int y, int objId, int ask)
-{
 
-
-    if(ask==1)
-    {
-        object_list[objId].i=0;
-        return 2;
-    }
-
-    ++object_list[objId].i;
-
-    if(map[object_list[objId].x-1][object_list[objId].y]=='.')
-        return 2;
-
-    if(object_list[objId].i % 2 == 0)
-        return 8;
-    else
-        return 8;
-
-}
-
-int greg(int x,int y, int objId, int ask)
-{
-    if(ask==1)
-    {
-        object_list[objId].i=0;
-        return 2;
-    }
-
-    ++object_list[objId].i;
-
-    if(object_list[objId].i % 2 == 0)
-        return 8;
-    else
-        return 60;
-
-}

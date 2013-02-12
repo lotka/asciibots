@@ -9,13 +9,13 @@
 	#define PRINT(...) printw(__VA_ARGS__)
 #endif
 
-typedef struct
+typedef struct obj
 {
     int type;
     int objId;
     int hp;
     int x, y, direction;
-    int (*ai)(int, int,int,int);
+    int (*ai)(int, int,struct obj *,int);
     char symbol;
     int i;
 } object;
@@ -27,12 +27,12 @@ void defaultMap();
 
 void newBullet(int,int,int);
 void newWall(int,int);
-void newPlayer(int,int ,int (*)(int,int,int,int));
+void newPlayer(int,int ,int (*)(int,int,object *,int));
 void destructor(int);
 int update(object *);
 int updatePlayer(object *);
 int updateBullet(object *);
 /*Ais*/
-int greg(int,int,int,int);
-int helen(int,int,int,int);
-object *object_list;   //Stores all objects.
+int greg(int,int,object *,int);
+
+char **map;   //Grid which is printed
