@@ -4,16 +4,16 @@
 	<stdlib.h>
 	<windows.h>
 
-1360711945 source:c:\users\samh\documents\github\asciibots\main.c
+1360795879 source:c:\users\samh\documents\github\asciibots\main.c
 	"main.h"
 
-1360710112 c:\users\samh\documents\github\asciibots\main.h
+1360797607 c:\users\samh\documents\github\asciibots\main.h
 	<stdio.h>
 	<stdlib.h>
 	<windows.h>
 	<ncurses.h>
 
-1360711628 source:c:\users\samh\documents\github\asciibots\greg.c
+1360796619 source:c:\users\samh\documents\github\asciibots\greg.c
 	"main.h"
 
 1360769785 source:c:\users\luka\dropbox\c\asciibots\main.c
@@ -44,5 +44,8 @@
 	"main.h"
 
 1360783548 source:c:\users\oliver\documents\folders\github\asciibots\greg.c
+	"main.h"
+
+1360794784 source:c:\users\samh\documents\github\asciibots\human.c
 	"main.h"
 

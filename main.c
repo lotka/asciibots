@@ -105,7 +105,10 @@ int main()
     {
         for(i=0; i<objectNumber; ++i)
         {
-            update(&object_list[i]); //Allows objects to do stuff
+            if(update(&object_list[i]) == 1)//Allows objects to do stuff
+            {
+                --i;
+            }
         }
 
         reprintMap();
@@ -239,20 +242,21 @@ void defaultMap()
 
 int update(object *currentObject)
 {
+
     switch((*currentObject).type)
     {
     case 1:
         break;
     case 2:
-        updatePlayer(currentObject);
-        break;
+        return updatePlayer(currentObject);
     case 3:
-        updateBullet(currentObject);
-        updateBullet(currentObject);
-        break;
+        if(updateBullet(currentObject) == 1)
+        {
+            return 1;
+        }
+        return updateBullet(currentObject);
     case 4:
-        updateMine(currentObject);
-        break;
+        return updateMine(currentObject);
     default:
         // printf("Unknown object type found. Was it Greg?");
         break;
@@ -262,7 +266,7 @@ int update(object *currentObject)
 
 int updatePlayer(object *currentObject)
 {
-    int aiChoice = ((*currentObject).ai)((*currentObject).x,(*currentObject).y,currentObject ,0);
+    int aiChoice;
     int i;
     //printf("%c", aiChoice);
     /*
@@ -279,8 +283,11 @@ int updatePlayer(object *currentObject)
 #ifdef _WIN32
         Beep(500,100);
 #endif
-
+        return 1;
     }
+
+    aiChoice = ((*currentObject).ai)((*currentObject).x,(*currentObject).y,currentObject ,0);
+
     switch(aiChoice)
     {
     case 2:
@@ -393,13 +400,13 @@ int updateBullet(object *currentObject)
                 if(object_list[i].type == 1)
                 {
                     destructor((*currentObject).objId);
-                    return 0;
+                    return 1;
                 }
                 else if(object_list[i].type == 2)
                 {
                     --(object_list[i].hp);
                     destructor((*currentObject).objId);
-                    return 0;
+                    return 1;
                 }
             }
         }
@@ -414,13 +421,13 @@ int updateBullet(object *currentObject)
                 {
                     (*currentObject).direction=6;
                     destructor((*currentObject).objId);
-                    return 0;
+                    return 1;
                 }
                 else if(object_list[i].type == 2)
                 {
                     --(object_list[i].hp);
                     destructor((*currentObject).objId);
-                    return 0;
+                    return 1;
                 }
 
             }
@@ -437,13 +444,13 @@ int updateBullet(object *currentObject)
                     (*currentObject).direction=4;
                     destructor((*currentObject).objId);
                     // printf("The destructor was triggered!\n");
-                    return 0;
+                    return 1;
                 }
                 else if(object_list[i].type == 2)
                 {
                     --(object_list[i].hp);
                     destructor((*currentObject).objId);
-                    return 0;
+                    return 1;
                 }
             }
         }
@@ -458,13 +465,13 @@ int updateBullet(object *currentObject)
                 {
                     (*currentObject).direction=2;
                     destructor((*currentObject).objId);
-                    return 0;
+                    return 1;
                 }
                 else if(object_list[i].type == 2)
                 {
                     --(object_list[i].hp);
                     destructor((*currentObject).objId);
-                    return 0;
+                    return 1;
                 }
             }
         }
@@ -485,6 +492,7 @@ int updateMine(object *currentObject)
         {
             object_list[i].hp = object_list[i].hp - 5;
             destructor((*currentObject).objId);
+            return 1;
         }
     }
 
@@ -505,6 +513,8 @@ void newWall(int x, int y)
 
 void newPlayer(int x, int y, int (*newFunct)(int,int,object *,int))
 {
+    int i;
+
     ++objectNumber;
     object_list = realloc(object_list,objectNumber*sizeof(object));
     object_list[objectNumber-1].type=2;
@@ -514,6 +524,14 @@ void newPlayer(int x, int y, int (*newFunct)(int,int,object *,int))
     object_list[objectNumber-1].hp=10;
     object_list[objectNumber-1].ai=newFunct;
     object_list[objectNumber-1].symbol=(*newFunct)(0,0,&object_list[objectNumber-1],1);
+    object_list[objectNumber-1].data=malloc(sizeof(int)*100);
+    object_list[objectNumber-1].localMap=malloc(sizeof(char*)*xsize);
+
+    for(i=0;i<xsize;i++)
+    {
+        object_list[objectNumber-1].localMap[i]=malloc(sizeof(char)*ysize);  //In Kieran's memory.
+        object_list[objectNumber-1].localMap[i]=malloc(sizeof(char)*ysize);  //In Kieran's memory.
+    }
 }
 
 void newBullet(int x, int y, int direction)

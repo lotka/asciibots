@@ -9,15 +9,25 @@
 	#define PRINT(...) printw(__VA_ARGS__)
 #endif
 
+
+int xsize; //these get set in either loadMap() or defaultMap()
+int ysize;
+
+
 typedef struct obj
 {
     int type;
     int objId;
     int hp;
     int x, y, direction;
-    int (*ai)(int, int,struct obj *,int);
     char symbol;
-    int i;
+
+    //For players only
+    int (*ai)(int, int,struct obj *,int);
+    int i,j,k;
+    char **localMap;
+    int *data;
+
 } object;
 
 typedef struct{
@@ -48,6 +58,3 @@ int greg(int,int,object *,int);
 int human(int,int,object *,int);
 
 char **map;   //Grid which is printed
-
-int xsize; //these get set in either loadMap() or defaultMap()
-int ysize;
