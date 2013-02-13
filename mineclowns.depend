@@ -31,3 +31,18 @@
 1360769487 source:c:\users\luka\dropbox\c\asciibots\human.c
 	"main.h"
 
+1360783548 source:c:\users\oliver\documents\folders\github\asciibots\human.c
+	"main.h"
+
+1360786802 c:\users\oliver\documents\folders\github\asciibots\main.h
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<ncurses.h>
+
+1360789281 source:c:\users\oliver\documents\folders\github\asciibots\main.c
+	"main.h"
+
+1360783548 source:c:\users\oliver\documents\folders\github\asciibots\greg.c
+	"main.h"
+

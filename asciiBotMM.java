@@ -194,7 +194,6 @@ public class asciiBotMM {
         boolean isCurrent = false;
 
         menuCell(int i, int xNum) {
-            num = i;
             menuCellListener mcelllistener = new menuCellListener();
             this.setOpaque(true);
             this.setBounds(30 * i * (xNum / 5), 0, 30 * (xNum / 5), 30);
@@ -202,6 +201,10 @@ public class asciiBotMM {
             this.setHorizontalTextPosition(RIGHT);
             this.setBorder(BorderFactory.createLineBorder(Color.black));
             this.addMouseListener(mcelllistener);
+						if(i == 2){
+							i = 5;
+						}
+						num = i;
 
             switch (i) {
                 case 0:
@@ -210,7 +213,7 @@ public class asciiBotMM {
                 case 1:
                     this.setText("Wall " + Integer.toString(i));
                     break;
-                case 2:
+                case 5:
                     this.setText("Player " + Integer.toString(i));
                     break;
                 case 3:

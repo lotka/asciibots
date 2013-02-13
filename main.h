@@ -20,18 +20,29 @@ typedef struct obj
     int i;
 } object;
 
+typedef struct{
+    char * name;
+    int (*ai)(int, int,struct obj *,int);
+}ai_t;
+
 
 //Note that loadMap and defaultMap are probably bad names. They should  be load object_list & default object_list.
 void loadMap();
 void defaultMap();
 
+void reprintMap();
+
 void newBullet(int,int,int);
 void newWall(int,int);
 void newPlayer(int,int ,int (*)(int,int,object *,int));
+void newMine(int , int );
+void newAi_t(char *,int (*)(int, int,struct obj *,int));
+void newStartingPosition(int ,int);
 void destructor(int);
 int update(object *);
 int updatePlayer(object *);
 int updateBullet(object *);
+int updateMine(object *);
 /*Ais*/
 int greg(int,int,object *,int);
 int human(int,int,object *,int);

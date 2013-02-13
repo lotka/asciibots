@@ -6,6 +6,7 @@
    2 - player
    3 - bullet
    4 - mine
+   5 - starting position //only used during map loading or making default map
 
    Action types:
    2,4,6,8 - Move like a numpad
@@ -16,21 +17,29 @@
 */
 
 int objectNumber=0;  //Counts number of objects
-
 object *object_list;   //Stores all objects.
+
+ai_t *ai_list; //stores the ais that can be used in the game
+int aiNumber = 0;
 
 int main()
 {
+    /*Any ai you want to be able to access must be entered here!*/
+    newAi_t("greg",&greg);
+    newAi_t("human",&human); //is this really a good idea?
 #ifndef _WIN32
     initscr();
     raw();
 #endif
-    int i,j,k;
+    int i,j;
     char c,d;
+    char *enteredName = malloc(256*sizeof(char));
+    char nonep[] = "none";
+    int foundName;
 
     do
     {
-        printf("Do you want to load a map from file (y/n) (default is basic square):");
+        PRINT("Do you want to load a map from file (y/n) (default is basic square):");
         c = getchar();
         d = getchar(); //needed to eat the '\0' that gets entered
     }
@@ -45,13 +54,52 @@ int main()
         defaultMap();
     }
 
-    map = malloc((xsize+2)*sizeof(char *));
+    map = malloc((xsize+2)*sizeof(char *)); //this has to go here because the map gets printed before ai location selection happens
     for(i=0; i<xsize+2; ++i)
     {
         map[i]=malloc(ysize);
     }
-    //newBullet(0,0,6);     //Test bullets
-    //newBullet(18,1,6);
+
+    reprintMap();
+    PRINT("Available ais are :\n");
+    for(i=0; i<aiNumber; ++i)
+    {
+        PRINT("%s\n",ai_list[i].name);
+    }
+
+    for(i=0; i<objectNumber; ++i)
+    {
+        if(object_list[i].type == 5)
+        {
+
+            foundName = 0;
+            while(foundName == 0)
+            {
+                PRINT("Please enter the ai to go in position (%d,%d) (\"none\" to leave space empty)):",object_list[i].x,object_list[i].y);
+                gets(enteredName);
+                if(strcmp(nonep,enteredName) == 0) //logig required to leave the space empty
+                {
+                    foundName= -1;
+                }else{
+                    for(j=0; j<aiNumber; ++j)
+                    {
+                        if(strcmp(ai_list[j].name,enteredName) == 0) //logic to work out which ai goes here
+                        {
+                            foundName = 1;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(foundName == 1)
+            {
+                newPlayer(object_list[i].x,object_list[i].y,ai_list[j].ai); //add a player with the chosen ai to the game
+            }
+            destructor(i); // get rid of the starting location object
+            --i; //this IS needed and explains some issues we have been having with destructor
+        }
+    }
+    free(ai_list); //not needed any more
 
     while(1)
     {
@@ -60,38 +108,12 @@ int main()
             update(&object_list[i]); //Allows objects to do stuff
         }
 
-        for(i=0; i<xsize; ++i)
-        {
-            for(j=0; j<ysize; ++j)
-            {
-                map[i][j]=' ';
-            }
-        }
+        reprintMap();
 
-        for(i=0; i<objectNumber; ++i)
-        {
-            if(object_list[i].type != 4)
-            {
-               map[object_list[i].x][object_list[i].y]=object_list[i].symbol;  //Looks through all the objects and places their symbol in their respective position.
-            }
-        }
-
-        //Reprint the map
-        for(j=0; j<ysize; ++j)
-        {
-            for(k=0; k<xsize; ++k)
-            {
-                PRINT("%c", map[k][j]);
-            }
-            PRINT("\n");
-        }
-
-        PRINT("objectNumber = %d\n", objectNumber);
-
-       // for(k=77; k<objectNumber; ++k)
-      //  {
-     //       PRINT("type=%d x=%d y=%d\n",object_list[k].type, object_list[k].x, object_list[k].y);
-     //   }
+        // for(k=77; k<objectNumber; ++k)
+        //  {
+        //       PRINT("type=%d x=%d y=%d\n",object_list[k].type, object_list[k].x, object_list[k].y);
+        //   }
 #ifdef _WIN32
         Sleep(50);
         system("cls");
@@ -104,6 +126,38 @@ int main()
     }
     endwin();
     return 0;
+}
+
+void reprintMap()
+{
+    int i,j;
+    for(i=0; i<xsize; ++i)
+    {
+        for(j=0; j<ysize; ++j)
+        {
+            map[i][j]=' ';
+        }
+    }
+
+    for(i=0; i<objectNumber; ++i)
+    {
+        if(object_list[i].type != 4)
+        {
+            map[object_list[i].x][object_list[i].y]=object_list[i].symbol;  //Looks through all the objects and places their symbol in their respective position.
+        }
+    }
+
+    //Reprint the map
+    for(i=0; i<ysize; ++i)
+    {
+        for(j=0; j<xsize; ++j)
+        {
+            PRINT("%c", map[j][i]);
+        }
+        PRINT("\n");
+    }
+
+    PRINT("objectNumber = %d\n", objectNumber);
 }
 
 void loadMap()
@@ -127,7 +181,7 @@ void loadMap()
 
     while(fileP == NULL)
     {
-        printf("Please enter the name of the map:");
+        PRINT("Please enter the name of the map:");
         scanf("%s",fileName);
         fileP = fopen(fileName,"r");
     }
@@ -135,16 +189,26 @@ void loadMap()
 
     fscanf(fileP,"%d\n%d\n", &xsize,&ysize);
 
-    while(!feof(fileP)){
+    while(!feof(fileP))
+    {
         fscanf(fileP,"%d %d %d %d\n",&type,&x,&y,&direction);
-        switch (type){  //when mines are implemented this needs extending
-            case 1: newWall(x,y);
-                break;
-            case 3: newBullet(x,y,direction);
-                break;
+        switch (type)   //when mines are implemented this needs extending
+        {
+        case 1:
+            newWall(x,y);
+            break;
+        case 3:
+            newBullet(x,y,direction);
+            break;
+         case 4:
+            newMine(x,y);
+            break;
+        case 5:
+            newStartingPosition(x,y);
+            break;
         }
     }
-    close(fileP);
+    fclose(fileP);
 
     return;
 }
@@ -167,13 +231,10 @@ void defaultMap()
 
         newWall(xsize-1,i);
     }
-
-    newPlayer(1,ysize -4,&greg);
-    newPlayer(3,3,&human);
-    newPlayer(xsize-2,ysize-2,&greg);
-
-    newMine(1,3);
-    newMine(1,1);
+    newStartingPosition(1,1);
+    newStartingPosition(xsize-2,1);
+    newStartingPosition(xsize-2,ysize-2);
+    newStartingPosition(1,ysize-2);
 }
 
 int update(object *currentObject)
@@ -193,7 +254,7 @@ int update(object *currentObject)
         updateMine(currentObject);
         break;
     default:
-        printf("Unknown object type found. Was it Greg?");
+        // printf("Unknown object type found. Was it Greg?");
         break;
     }
     return 0;
@@ -418,8 +479,10 @@ int updateBullet(object *currentObject)
 int updateMine(object *currentObject)
 {
     int i;
-    for(i=0;i<objectNumber;++i){
-        if(object_list[i].type == 2 && object_list[i].x == (*currentObject).x && object_list[i].y == (*currentObject).y){
+    for(i=0; i<objectNumber; ++i)
+    {
+        if(object_list[i].type == 2 && object_list[i].x == (*currentObject).x && object_list[i].y == (*currentObject).y)
+        {
             object_list[i].hp = object_list[i].hp - 5;
             destructor((*currentObject).objId);
         }
@@ -430,9 +493,7 @@ int updateMine(object *currentObject)
 
 void newWall(int x, int y)
 {
-
     ++objectNumber;
-
     object_list = realloc(object_list,objectNumber*sizeof(object));
     object_list[objectNumber-1].type=1;
     object_list[objectNumber-1].objId = objectNumber-1;
@@ -498,6 +559,25 @@ void newMine(int x, int y)
     object_list[objectNumber-1].x=x;
     object_list[objectNumber-1].y=y;
     object_list[objectNumber-1].symbol='x';
+}
+
+void newAi_t(char * name,int (*ai)(int, int,struct obj *,int))
+{
+    ++aiNumber;
+    ai_list = realloc(ai_list,aiNumber*sizeof(ai_t));
+    ai_list[aiNumber-1].name = malloc(sizeof(char) * (strlen(name) +1));
+    strcpy(ai_list[aiNumber-1].name,name);
+    ai_list[aiNumber-1].ai = ai;
+}
+void newStartingPosition(int x,int y)
+{
+    ++objectNumber;
+    object_list = realloc(object_list,objectNumber*sizeof(object));
+    object_list[objectNumber-1].type=5;
+    object_list[objectNumber-1].objId = objectNumber-1;
+    object_list[objectNumber-1].x=x;
+    object_list[objectNumber-1].y=y;
+    object_list[objectNumber-1].symbol='°';
 }
 
 void destructor(int n)
