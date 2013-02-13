@@ -37,3 +37,6 @@ int greg(int,int,object *,int);
 int human(int,int,object *,int);
 
 char **map;   //Grid which is printed
+
+int xsize; //these get set in either loadMap() or defaultMap()
+int ysize;

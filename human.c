@@ -2,14 +2,34 @@
 
 int human(int x,int y, object * me, int ask)
 {
-    int c;
-    
+    int i,j,c;
+
     if(ask == 1)
-       {
-           return 2;
-       }
+    {
+        (*me).i = 0;
+        return 2;
+    }
 
-    scanf("%d", &c);
+    ++((*me).i);
 
-    return c;
+    if( (*me).i > 1)
+    {
+
+        for(j=0; j<ysize; ++j)
+        {
+            for(i=0; i<xsize; ++i)
+            {
+                PRINT("%c", map[i][j]);
+            }
+            PRINT("\n");
+        }
+
+       printf("\nEnter command for player:");
+
+       scanf("%d", &c);
+
+       return c;
+    }
+
+    return 0;
 }

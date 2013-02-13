@@ -17,9 +17,6 @@
 
 int objectNumber=0;  //Counts number of objects
 
-int xsize; //these get set in either loadMap() or defaultMap()
-int ysize;
-
 object *object_list;   //Stores all objects.
 
 int main()
@@ -172,8 +169,8 @@ void defaultMap()
     }
 
     newPlayer(1,ysize -4,&greg);
+    newPlayer(3,3,&human);
     newPlayer(xsize-2,ysize-2,&greg);
-//    newPlayer(5,5,&human);
 
     newMine(1,3);
     newMine(1,1);
