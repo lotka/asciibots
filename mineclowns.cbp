@@ -34,6 +34,9 @@
 		<Unit filename="greg.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="human.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>

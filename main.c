@@ -58,7 +58,6 @@ int main()
 
     while(1)
     {
-
         for(i=0; i<objectNumber; ++i)
         {
             update(&object_list[i]); //Allows objects to do stuff
@@ -174,6 +173,7 @@ void defaultMap()
 
     newPlayer(1,ysize -4,&greg);
     newPlayer(xsize-2,ysize-2,&greg);
+//    newPlayer(5,5,&human);
 
     newMine(1,3);
     newMine(1,1);

@@ -16,3 +16,18 @@
 1360711628 source:c:\users\samh\documents\github\asciibots\greg.c
 	"main.h"
 
+1360743403 source:c:\users\luka\dropbox\c\asciibots\main.c
+	"main.h"
+
+1360743039 c:\users\luka\dropbox\c\asciibots\main.h
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<ncurses.h>
+
+1360742673 source:c:\users\luka\dropbox\c\asciibots\greg.c
+	"main.h"
+
+1360743189 source:c:\users\luka\dropbox\c\asciibots\human.c
+	"main.h"
+

@@ -34,5 +34,6 @@ int updatePlayer(object *);
 int updateBullet(object *);
 /*Ais*/
 int greg(int,int,object *,int);
+int human(int,int,object *,int);
 
 char **map;   //Grid which is printed
