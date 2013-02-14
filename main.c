@@ -25,6 +25,7 @@ int main()
     /*Any ai you want to be able to access must be entered here!*/
     newAi_t("greg",&greg);
     newAi_t("human",&human); //is this really a good idea?
+    newAi_t("tito",&tito);
 
 #ifndef _WIN32
     initscr();
@@ -501,7 +502,6 @@ void newPlayer(int x, int y, int (*newFunct)(int,int,object *,int), int directio
     object_list[objectNumber-1].y=y;
     object_list[objectNumber-1].hp=10;
     object_list[objectNumber-1].ai=newFunct;
-    object_list[objectNumber-1].symbol=(*newFunct)(0,0,&object_list[objectNumber-1],1);
     object_list[objectNumber-1].data=malloc(sizeof(int)*100);
     object_list[objectNumber-1].localMap=malloc(sizeof(char*)*xsize);
     object_list[objectNumber-1].direction=direction;
@@ -509,8 +509,10 @@ void newPlayer(int x, int y, int (*newFunct)(int,int,object *,int), int directio
     for(i=0; i<xsize; i++)
     {
         object_list[objectNumber-1].localMap[i]=malloc(sizeof(char)*ysize);  //In Kieran's memory.
-        object_list[objectNumber-1].localMap[i]=malloc(sizeof(char)*ysize);  //In Kieran's memory.
     }
+
+
+    object_list[objectNumber-1].symbol=(*newFunct)(0,0,&object_list[objectNumber-1],1);
 }
 
 void newBullet(int x, int y, int direction)

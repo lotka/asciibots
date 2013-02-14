@@ -57,6 +57,7 @@ int updateMine(object *);
 /*AI Functions*/
 int greg(int,int,object *,int);
 int human(int,int,object *,int);
+int tito(int,int,object *,int);
 
 /* Map Information */
 char **map; //Grid which is printed
