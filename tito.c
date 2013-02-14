@@ -1,7 +1,5 @@
 /* Plan
 
-
-
 Priorities
 0. Don't get hit by an incoming bullet
 1. Record possible mine positions, never go on these suspected coordinates
