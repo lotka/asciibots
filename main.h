@@ -44,10 +44,10 @@ void reprintMap();
 
 void newBullet(int,int,int);
 void newWall(int,int);
-void newPlayer(int,int ,int (*)(int,int,object *,int));
+void newPlayer(int,int ,int (*)(int,int,object *,int),int);
 void newMine(int , int );
 void newAi_t(char *,int (*)(int, int,struct obj *,int));
-void newStartingPosition(int ,int);
+void newStartingPosition(int ,int,int);
 void destructor(int);
 int update(object *);
 int updatePlayer(object *);

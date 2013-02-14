@@ -9,9 +9,7 @@
    5 - starting position //only used during map loading or making default map
 
    Action types:
-   2,4,6,8 - Move like a numpad
-   20,40,60,80 - FIRE!
-   200,400,600,800, - drop mine
+   2,4,6 and 8 change direction, like number pad. 5 moves forward, 50 fires a bullet, 500 deploys a mine.
    42 - offer peace
    999 - call the police
 */
@@ -80,7 +78,9 @@ int main()
                 if(strcmp(nonep,enteredName) == 0) //logig required to leave the space empty
                 {
                     foundName= -1;
-                }else{
+                }
+                else
+                {
                     for(j=0; j<aiNumber; ++j)
                     {
                         if(strcmp(ai_list[j].name,enteredName) == 0) //logic to work out which ai goes here
@@ -93,8 +93,9 @@ int main()
             }
             if(foundName == 1)
             {
-                newPlayer(object_list[i].x,object_list[i].y,ai_list[j].ai); //add a player with the chosen ai to the game
+                newPlayer(object_list[i].x,object_list[i].y,ai_list[j].ai,object_list[i].direction); //add a player with the chosen ai to the game
             }
+            PRINT("%d\n",object_list[i].direction);
             destructor(i); // get rid of the starting location object
             --i; //this IS needed and explains some issues we have been having with destructor
         }
@@ -203,11 +204,11 @@ void loadMap()
         case 3:
             newBullet(x,y,direction);
             break;
-         case 4:
+        case 4:
             newMine(x,y);
             break;
         case 5:
-            newStartingPosition(x,y);
+            newStartingPosition(x,y,direction);
             break;
         }
     }
@@ -234,10 +235,10 @@ void defaultMap()
 
         newWall(xsize-1,i);
     }
-    newStartingPosition(1,1);
-    newStartingPosition(xsize-2,1);
-    newStartingPosition(xsize-2,ysize-2);
-    newStartingPosition(1,ysize-2);
+    newStartingPosition(1,1,6);
+    newStartingPosition(xsize-2,1,4);
+    newStartingPosition(xsize-2,ysize-2,4);
+    newStartingPosition(1,ysize-2,6);
 }
 
 int update(object *currentObject)
@@ -252,7 +253,7 @@ int update(object *currentObject)
     case 3:
         if(updateBullet(currentObject) == 1)
         {
-            return 1;
+           return 1;
         }
         return updateBullet(currentObject);
     case 4:
@@ -267,13 +268,10 @@ int update(object *currentObject)
 int updatePlayer(object *currentObject)
 {
     int aiChoice;
-    int i;
-    //printf("%c", aiChoice);
-    /*
+    int i, nextx, nexty;
 
-     2,4,6,8 - Move like a numpad
-       20,40,60,80 - FIRE!
-       200,400,600,800, - drop mine
+    /* Action types:
+       2,4,6 and 8 change direction, like number pad. 5 moves forward, 50 fires a bullet, 500 deploys a mine.
        42 - offer peace
        999 - call the police */
 
@@ -288,93 +286,71 @@ int updatePlayer(object *currentObject)
 
     aiChoice = ((*currentObject).ai)((*currentObject).x,(*currentObject).y,currentObject ,0);
 
+    if((*currentObject).direction==2)
+    {
+        nextx=0;
+        nexty=1;
+    }
+    if((*currentObject).direction==4)
+    {
+        nextx=-1;
+        nexty=0;
+    }
+    if((*currentObject).direction==6)
+    {
+        nextx=1;
+        nexty=0;
+    }
+    if((*currentObject).direction==8)
+    {
+        nextx=0;
+        nexty=-1;
+    }
+
     switch(aiChoice)
     {
     case 2:
-        for(i=0; i<objectNumber; i++)
-        {
-            if((*currentObject).x==object_list[i].x && (*currentObject).y+1==object_list[i].y)
-            {
-                if(object_list[i].type == 1)
-                {
-                    return 0;
-
-                }
-            }
-        }
-        ++(*currentObject).y;
+        (*currentObject).direction=2;
         return 0;
         break;
     case 4:
-        for(i=0; i<objectNumber; i++)
-        {
-            if((*currentObject).x-1==object_list[i].x && (*currentObject).y==object_list[i].y)
-            {
-                if(object_list[i].type == 1)
-                {
-                    return 0;
-
-                }
-            }
-        }
-        --(*currentObject).x;
+        (*currentObject).direction=4;
         return 0;
-
         break;
     case 6:
-        for(i=0; i<objectNumber; i++)
-        {
-            if((*currentObject).x+1==object_list[i].x && (*currentObject).y==object_list[i].y)
-            {
-                if(object_list[i].type == 1)
-                {
-                    return 0;
-
-                }
-            }
-        }
-        ++(*currentObject).x;
+        (*currentObject).direction=6;
         return 0;
         break;
     case 8:
-        for(i=0; i<objectNumber; i++)
-        {
-            if((*currentObject).x==object_list[i].x && (*currentObject).y-1==object_list[i].y)
-            {
-                if(object_list[i].type == 1)
-                {
-                    return 0;
-                }
-            }
-        }
-        --(*currentObject).y;
+        (*currentObject).direction=8;
         return 0;
         break;
-    case 20:
-        newBullet((*currentObject).x,(*currentObject).y +1,2);
+
+    case 5:
+
+    for(i=0; i<objectNumber; i++)   //Object list is an array of structs!!! Don't forget that!!!
+    {
+        if( object_list[i].x==(*currentObject).x + nextx && object_list[i].y==(*currentObject).y+nexty && (object_list[i].type==1 || object_list[i].type==2))
+        {
+            return 0;
+        }
+    }
+
+        (*currentObject).x= (*currentObject).x+nextx;
+        (*currentObject).y= (*currentObject).y+nexty;
+
         break;
-    case 40:
-        newBullet((*currentObject).x-1,(*currentObject).y,4);
-        break;
-    case 60:
-        newBullet((*currentObject).x+1,(*currentObject).y,6);
-        break;
-    case 80:
-        newBullet((*currentObject).x,(*currentObject).y-1,8);
-        break;
-    case 200:
-        newMine((*currentObject).x,(*currentObject).y+1);
-        break;
-    case 400:
-        newMine((*currentObject).x-1,(*currentObject).y);
-        break;
-    case 600:
-        newMine((*currentObject).x+1,(*currentObject).y);
-        break;
-    case 800:
-        newMine((*currentObject).x,(*currentObject).y-1);
-        break;
-    case 42:
+
+    case 50:
+
+        newBullet((*currentObject).x+nextx, (*currentObject).y+nexty, (*currentObject).direction);
+
+    case 500:
+
+        newMine((*currentObject).x+nextx, (*currentObject).y+nexty);
+
+
+    case 42:            //To be completed...
         break;
     case 999:
         break;
@@ -395,7 +371,7 @@ int updateBullet(object *currentObject)
 
         for(i=0; i<objectNumber; i++)
         {
-            if((*currentObject).x==object_list[i].x && (*currentObject).y+1==object_list[i].y)
+            if(((*currentObject).x==object_list[i].x && (*currentObject).y+1==object_list[i].y) || ((*currentObject).x==object_list[i].x && (*currentObject).y==object_list[i].y))
             {
                 if(object_list[i].type == 1)
                 {
@@ -415,7 +391,7 @@ int updateBullet(object *currentObject)
     case 4:
         for(i=0; i<objectNumber; i++)
         {
-            if((*currentObject).x-1==object_list[i].x && (*currentObject).y==object_list[i].y)
+            if(((*currentObject).x-1==object_list[i].x && (*currentObject).y==object_list[i].y)  || ((*currentObject).x==object_list[i].x && (*currentObject).y==object_list[i].y))
             {
                 if(object_list[i].type == 1)
                 {
@@ -437,7 +413,7 @@ int updateBullet(object *currentObject)
     case 6:
         for(i=0; i<objectNumber; i++)
         {
-            if((*currentObject).x+1==object_list[i].x && (*currentObject).y==object_list[i].y)
+            if(((*currentObject).x+1==object_list[i].x && (*currentObject).y==object_list[i].y)  || ((*currentObject).x==object_list[i].x && (*currentObject).y==object_list[i].y))
             {
                 if(object_list[i].type == 1)
                 {
@@ -459,7 +435,7 @@ int updateBullet(object *currentObject)
     case 8:
         for(i=0; i<objectNumber; i++)
         {
-            if((*currentObject).x==object_list[i].x && (*currentObject).y-1==object_list[i].y)
+            if(((*currentObject).x==object_list[i].x && (*currentObject).y-1==object_list[i].y)  || ((*currentObject).x==object_list[i].x && (*currentObject).y==object_list[i].y))
             {
                 if(object_list[i].type == 1)
                 {
@@ -511,7 +487,7 @@ void newWall(int x, int y)
 
 }
 
-void newPlayer(int x, int y, int (*newFunct)(int,int,object *,int))
+void newPlayer(int x, int y, int (*newFunct)(int,int,object *,int), int direction)
 {
     int i;
 
@@ -526,8 +502,9 @@ void newPlayer(int x, int y, int (*newFunct)(int,int,object *,int))
     object_list[objectNumber-1].symbol=(*newFunct)(0,0,&object_list[objectNumber-1],1);
     object_list[objectNumber-1].data=malloc(sizeof(int)*100);
     object_list[objectNumber-1].localMap=malloc(sizeof(char*)*xsize);
+    object_list[objectNumber-1].direction=direction;
 
-    for(i=0;i<xsize;i++)
+    for(i=0; i<xsize; i++)
     {
         object_list[objectNumber-1].localMap[i]=malloc(sizeof(char)*ysize);  //In Kieran's memory.
         object_list[objectNumber-1].localMap[i]=malloc(sizeof(char)*ysize);  //In Kieran's memory.
@@ -587,7 +564,7 @@ void newAi_t(char * name,int (*ai)(int, int,struct obj *,int))
     strcpy(ai_list[aiNumber-1].name,name);
     ai_list[aiNumber-1].ai = ai;
 }
-void newStartingPosition(int x,int y)
+void newStartingPosition(int x,int y, int direction)
 {
     ++objectNumber;
     object_list = realloc(object_list,objectNumber*sizeof(object));
@@ -596,6 +573,7 @@ void newStartingPosition(int x,int y)
     object_list[objectNumber-1].x=x;
     object_list[objectNumber-1].y=y;
     object_list[objectNumber-1].symbol='°';
+    object_list[objectNumber-1].direction=direction;
 }
 
 void destructor(int n)
