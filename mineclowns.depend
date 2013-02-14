@@ -19,13 +19,13 @@
 1360769785 source:c:\users\luka\dropbox\c\asciibots\main.c
 	"main.h"
 
-1360769115 c:\users\luka\dropbox\c\asciibots\main.h
+1360831421 c:\users\luka\dropbox\c\asciibots\main.h
 	<stdio.h>
 	<stdlib.h>
 	<windows.h>
 	<ncurses.h>
 
-1360769785 source:c:\users\luka\dropbox\c\asciibots\greg.c
+1360829819 source:c:\users\luka\dropbox\c\asciibots\greg.c
 	"main.h"
 
 1360769487 source:c:\users\luka\dropbox\c\asciibots\human.c

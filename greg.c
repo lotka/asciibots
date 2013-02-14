@@ -11,7 +11,9 @@ int greg(int x,int y, object * me, int ask)
     }
 
 
-  return 5;
+
+
+  return 50;
 
 
 }

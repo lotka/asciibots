@@ -9,11 +9,7 @@
 	#define PRINT(...) printw(__VA_ARGS__)
 #endif
 
-
-int xsize; //these get set in either loadMap() or defaultMap()
-int ysize;
-
-
+/* Objects */
 typedef struct obj
 {
     int type;
@@ -36,12 +32,14 @@ typedef struct{
 }ai_t;
 
 
+/* Map intizilation */
 //Note that loadMap and defaultMap are probably bad names. They should  be load object_list & default object_list.
 void loadMap();
 void defaultMap();
-
 void reprintMap();
 
+
+/* Object constructors and destructor */
 void newBullet(int,int,int);
 void newWall(int,int);
 void newPlayer(int,int ,int (*)(int,int,object *,int),int);
@@ -49,12 +47,18 @@ void newMine(int , int );
 void newAi_t(char *,int (*)(int, int,struct obj *,int));
 void newStartingPosition(int ,int,int);
 void destructor(int);
+
+/* Object updating */
 int update(object *);
 int updatePlayer(object *);
 int updateBullet(object *);
 int updateMine(object *);
-/*Ais*/
+
+/*AI Functions*/
 int greg(int,int,object *,int);
 int human(int,int,object *,int);
 
-char **map;   //Grid which is printed
+/* Map Information */
+char **map; //Grid which is printed
+int xsize;  //these get set in either loadMap() or defaultMap()
+int ysize;

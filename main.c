@@ -25,10 +25,12 @@ int main()
     /*Any ai you want to be able to access must be entered here!*/
     newAi_t("greg",&greg);
     newAi_t("human",&human); //is this really a good idea?
+
 #ifndef _WIN32
     initscr();
     raw();
 #endif
+
     int i,j;
     char c,d;
     char *enteredName = malloc(256*sizeof(char));
@@ -95,6 +97,7 @@ int main()
             {
                 newPlayer(object_list[i].x,object_list[i].y,ai_list[j].ai,object_list[i].direction); //add a player with the chosen ai to the game
             }
+
             PRINT("%d\n",object_list[i].direction);
             destructor(i); // get rid of the starting location object
             --i; //this IS needed and explains some issues we have been having with destructor
@@ -102,7 +105,8 @@ int main()
     }
     free(ai_list); //not needed any more
 
-    while(1)
+    /* Main Game Loop */
+    while( 1 )
     {
         for(i=0; i<objectNumber; ++i)
         {
@@ -111,13 +115,7 @@ int main()
                 --i;
             }
         }
-
         reprintMap();
-
-        // for(k=77; k<objectNumber; ++k)
-        //  {
-        //       PRINT("type=%d x=%d y=%d\n",object_list[k].type, object_list[k].x, object_list[k].y);
-        //   }
 #ifdef _WIN32
         Sleep(50);
         system("cls");
@@ -128,8 +126,12 @@ int main()
         usleep(100000);
 #endif
     }
+
+
     endwin();
     return 0;
+
+
 }
 
 void reprintMap()
@@ -564,6 +566,7 @@ void newAi_t(char * name,int (*ai)(int, int,struct obj *,int))
     strcpy(ai_list[aiNumber-1].name,name);
     ai_list[aiNumber-1].ai = ai;
 }
+
 void newStartingPosition(int x,int y, int direction)
 {
     ++objectNumber;
