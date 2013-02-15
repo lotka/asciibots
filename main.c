@@ -105,6 +105,7 @@ int main()
         }
     }
     free(ai_list); //not needed any more
+    reprintMap();
 
     /* Main Game Loop */
     while( 1 )
@@ -142,7 +143,7 @@ void reprintMap()
     {
         for(j=0; j<ysize; ++j)
         {
-            map[i][j]=' ';
+            map[i][j]=SPACE_SYMBOL;
         }
     }
 
@@ -223,8 +224,8 @@ void loadMap()
 void defaultMap()
 {
     int i;
-    xsize = 20;
-    ysize = 20;
+    xsize = 25;
+    ysize = 25;
     for(i=0; i<xsize; ++i)
     {
         newWall(i,0);
@@ -238,6 +239,7 @@ void defaultMap()
 
         newWall(xsize-1,i);
     }
+
     newStartingPosition(1,1,6);
     newStartingPosition(xsize-2,1,4);
     newStartingPosition(xsize-2,ysize-2,4);
@@ -486,7 +488,7 @@ void newWall(int x, int y)
     object_list[objectNumber-1].objId = objectNumber-1;
     object_list[objectNumber-1].x=x;
     object_list[objectNumber-1].y=y;
-    object_list[objectNumber-1].symbol='²';
+    object_list[objectNumber-1].symbol=WALL_SYMBOL;
 
 }
 
@@ -535,8 +537,7 @@ void newBullet(int x, int y, int direction)
     object_list[objectNumber-1].x=x;
     object_list[objectNumber-1].y=y;
     object_list[objectNumber-1].direction=direction;
-    object_list[objectNumber-1].symbol='.';
-
+    object_list[objectNumber-1].symbol=BULLET_SYMBOL;
 }
 
 void newMine(int x, int y)

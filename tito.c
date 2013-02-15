@@ -12,12 +12,22 @@ Priorities
 
 #include "main.h"
 #define MINEFLAG 1351
-void copymap(char **, char **, int);
+#define DIJK 10
+void copymap(char **localMap,char **map, int flag);
 
 int tito(int x,int y, object * me, int ask)
 {
 
     int i,j;
+    char **binaryMap;
+    point start;
+    point end;
+
+    path trip;
+
+
+
+
 
     if(ask==1)
     {
@@ -33,17 +43,58 @@ int tito(int x,int y, object * me, int ask)
         return 14;
     }
 
-    copymap(map,(*me).localMap,0);
+    start.x=x;
+    start.y=y;
+
+    end.x=17;
+    end.y=2;
 
 
-    return 5;
+    binaryMap = malloc(sizeof(int*)*xsize);
+    for(i=0;i<xsize;i++)
+    {
+        binaryMap[i]=malloc(sizeof(int)*ysize);
+    }
+
+    copymap((*me).localMap,map,0);
+    copymap(binaryMap,(*me).localMap,DIJK);
+    binaryMap[x][y]=0;
+
+
+/* Binary Map Print
+        for(j=0; j<ysize; ++j)
+        {
+            for(i=0; i<xsize; ++i)
+            {
+                PRINT("%d", binaryMap[i][j]);
+            }
+            PRINT("\n");
+        }
+*/
+    if((x != end.x) || (y != end.y))
+    {
+       //printf("\n%d %d\n", x,y);
+       trip = dijkstra(binaryMap,start,end);
+       (*me).x=trip.x[trip.length-1];
+       (*me).y=trip.y[trip.length-1];
+    }
+
+/*
+    for(i=0; i<trip.length; ++i)
+    {
+        printf("\n x= %d y=%d", trip.x[i], trip.y[i]);
+    }
+*/
+ return 0;
+
+
 
 
 
 
 }
 
-void copymap(char **map, char **localMap, int flag)
+void copymap(char **localMap,char **map, int flag)
 {
     int i,j;
 
@@ -54,6 +105,29 @@ void copymap(char **map, char **localMap, int flag)
             if(localMap[i][j] != MINEFLAG)
             {
                 localMap[i][j]=map[i][j];
+            }
+            else if((map[i][j] != SPACE_SYMBOL) && (map[i][j] != BULLET_SYMBOL) && (map[i][j] != WALL_SYMBOL))
+            {
+                localMap[i][j]=map[i][j];
+            }
+        }
+    }
+
+    if(flag==DIJK)
+    {
+        for(j=0;j<ysize;j++)
+        {
+            for(i=0;i<xsize;i++)
+            {
+                if(localMap[i][j] == SPACE_SYMBOL || localMap[i][j] == BULLET_SYMBOL)
+                {
+                    localMap[i][j]=0;
+                }
+                else
+                {
+                    localMap[i][j]=1;
+                }
+
             }
         }
     }

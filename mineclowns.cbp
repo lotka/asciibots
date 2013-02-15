@@ -31,6 +31,9 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="dijkstra.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="greg.c">
 			<Option compilerVar="CC" />
 		</Unit>

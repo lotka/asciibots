@@ -1,5 +1,8 @@
 #include "main.h"
 
+
+
+
 int greg(int x,int y, object * me, int ask)
 {
 
