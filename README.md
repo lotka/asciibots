@@ -11,3 +11,5 @@ The bots can only do one operation each turn, for example:
 * Fire bullet in current direction
 * Lay mine in current direction
 
+We are working on a library of functions, including path finding which you can use to create a bot.
+
