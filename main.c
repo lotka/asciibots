@@ -15,7 +15,7 @@
 */
 
 int objectNumber=0;  //Counts number of objects
-object *object_list;   //Stores all objects.
+object *object_list;   //Stores all objects except those of type ai_t.
 
 ai_t *ai_list; //stores the ais that can be used in the game
 int aiNumber = 0;
@@ -367,7 +367,8 @@ int updateBullet(object *currentObject)
             }
         }
     }
-    ++(*currentObject).y;
+    (*currentObject).x = (*currentObject).x + nextPoint.x;
+    (*currentObject).y = (*currentObject).y + nextPoint.y;
     return 0;
 
 }
@@ -503,10 +504,7 @@ void newAi_t(char * name,int (*ai)(int, int,struct obj *,int))
     ai_list = realloc(ai_list,aiNumber*sizeof(ai_t));
     ai_list[aiNumber-1].name = malloc(sizeof(char) * (strlen(name)+1));
     strcpy(ai_list[aiNumber-1].name,name);
-
     ai_list[aiNumber-1].name[strlen(ai_list[aiNumber-1].name)]='\0';
-
-    printf("%s,%d\n",ai_list[aiNumber-1].name,strlen(ai_list[aiNumber-1].name));
     ai_list[aiNumber-1].ai = ai;
 }
 
