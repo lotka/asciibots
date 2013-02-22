@@ -130,7 +130,10 @@ int main()
     }
 
 
+#ifndef _WIN32
     endwin();
+#endif
+
     return 0;
 
 
@@ -256,13 +259,13 @@ int update(object *currentObject)
     case 2:
         return updatePlayer(currentObject);
     case 3:
-        if(updateBullet(currentObject) == 1)
+        if(updateBullet(currentObject) == 1)    //this dodgy looking section just allows bullets to move twice as fast as other stuff!
         {
            return 1;
         }
         return updateBullet(currentObject);
     case 4:
-        return updateMine(currentObject);
+        return updateBullet(currentObject);
     default:
         // printf("Unknown object type found. Was it Greg?");
         break;
@@ -471,7 +474,7 @@ int updateMine(object *currentObject)
     {
         if(object_list[i].type == 2 && object_list[i].x == (*currentObject).x && object_list[i].y == (*currentObject).y)
         {
-            object_list[i].hp = object_list[i].hp - 5;
+            object_list[i].hp = object_list[i].hp - 4;
             destructor((*currentObject).objId);
             return 1;
         }
