@@ -35,7 +35,7 @@ int main()
     int i,j;
     char c,d;
     char *enteredName = malloc(256*sizeof(char));
-    char nonep[] = "none";
+    char nonep[5] = "none\0";
     int foundName;
 
     do
@@ -76,9 +76,10 @@ int main()
             foundName = 0;
             while(foundName == 0)
             {
-                PRINT("Please enter the ai to go in position (%d,%d) (\"none\" to leave space empty)):",object_list[i].x,object_list[i].y);
-                gets(enteredName);
-                if(strcmp(nonep,enteredName) == 0) //logig required to leave the space empty
+                PRINT("Please enter the ai to go in position (%d,%d)\n(\"none\" to leave space empty)):",object_list[i].x,object_list[i].y);
+                scanf("%s",enteredName);
+                getchar();
+                if(strcmp(nonep,enteredName) == 0) //logic required to leave the space empty
                 {
                     foundName= -1;
                 }
@@ -99,7 +100,7 @@ int main()
                 newPlayer(object_list[i].x,object_list[i].y,ai_list[j].ai,object_list[i].direction); //add a player with the chosen ai to the game
             }
 
-            PRINT("%d\n",object_list[i].direction);
+            //PRINT("%d\n",object_list[i].direction);
             destructor(i); // get rid of the starting location object
             --i; //this IS needed and explains some issues we have been having with destructor
         }
@@ -194,6 +195,7 @@ void loadMap()
     {
         PRINT("Please enter the name of the map:");
         scanf("%s",fileName);
+        getchar();
         fileP = fopen(fileName,"r");
     }
     free(fileName);
@@ -203,7 +205,7 @@ void loadMap()
     while(!feof(fileP))
     {
         fscanf(fileP,"%d %d %d %d\n",&type,&x,&y,&direction);
-        switch (type)   //when mines are implemented this needs extending
+        switch (type)
         {
         case 1:
             newWall(x,y);
@@ -221,7 +223,7 @@ void loadMap()
     }
     fclose(fileP);
 
-    return;
+    return 0;
 }
 
 void defaultMap()
@@ -331,7 +333,6 @@ int updatePlayer(object *currentObject)
     case 500:
 
         newMine((*currentObject).x+nextPoint.x, (*currentObject).y+nextPoint.y);
-
 
     case 42:            //To be completed...
         break;
@@ -500,8 +501,12 @@ void newAi_t(char * name,int (*ai)(int, int,struct obj *,int))
 {
     ++aiNumber;
     ai_list = realloc(ai_list,aiNumber*sizeof(ai_t));
-    ai_list[aiNumber-1].name = malloc(sizeof(char) * (strlen(name) +1));
+    ai_list[aiNumber-1].name = malloc(sizeof(char) * (strlen(name)+1));
     strcpy(ai_list[aiNumber-1].name,name);
+
+    ai_list[aiNumber-1].name[strlen(ai_list[aiNumber-1].name)]='\0';
+
+    printf("%s,%d\n",ai_list[aiNumber-1].name,strlen(ai_list[aiNumber-1].name));
     ai_list[aiNumber-1].ai = ai;
 }
 
