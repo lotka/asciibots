@@ -261,11 +261,11 @@ int update(object *currentObject)
     case 3:
         if(updateBullet(currentObject) == 1)    //this dodgy looking section just allows bullets to move twice as fast as other stuff!
         {
-           return 1;
+            return 1;
         }
         return updateBullet(currentObject);
     case 4:
-        return updateBullet(currentObject);
+        return updateMine(currentObject);
     default:
         // printf("Unknown object type found. Was it Greg?");
         break;
@@ -276,12 +276,7 @@ int update(object *currentObject)
 int updatePlayer(object *currentObject)
 {
     int aiChoice;
-    int i, nextx, nexty;
-
-    /* Action types:
-       2,4,6 and 8 change direction, like number pad. 5 moves forward, 50 fires a bullet, 500 deploys a mine.
-       42 - offer peace
-       999 - call the police */
+    int i;
 
     if((*currentObject).hp <= 0)
     {
@@ -293,27 +288,7 @@ int updatePlayer(object *currentObject)
     }
 
     aiChoice = ((*currentObject).ai)((*currentObject).x,(*currentObject).y,currentObject ,0);
-
-    if((*currentObject).direction==2)
-    {
-        nextx=0;
-        nexty=1;
-    }
-    if((*currentObject).direction==4)
-    {
-        nextx=-1;
-        nexty=0;
-    }
-    if((*currentObject).direction==6)
-    {
-        nextx=1;
-        nexty=0;
-    }
-    if((*currentObject).direction==8)
-    {
-        nextx=0;
-        nexty=-1;
-    }
+    point nextPoint = next(currentObject);
 
     switch(aiChoice)
     {
@@ -336,26 +311,26 @@ int updatePlayer(object *currentObject)
 
     case 5:
 
-    for(i=0; i<objectNumber; i++)   //Object list is an array of structs!!! Don't forget that!!!
-    {
-        if( object_list[i].x==(*currentObject).x + nextx && object_list[i].y==(*currentObject).y+nexty && (object_list[i].type==1 || object_list[i].type==2))
+        for(i=0; i<objectNumber; i++)   //Object list is an array of structs!!! Don't forget that!!!
         {
-            return 0;
+            if( object_list[i].x==(*currentObject).x + nextPoint.x && object_list[i].y==(*currentObject).y+nextPoint.y && (object_list[i].type==1 || object_list[i].type==2))
+            {
+                return 0;
+            }
         }
-    }
 
-        (*currentObject).x= (*currentObject).x+nextx;
-        (*currentObject).y= (*currentObject).y+nexty;
+        (*currentObject).x= (*currentObject).x+nextPoint.x;
+        (*currentObject).y= (*currentObject).y+nextPoint.y;
 
         break;
 
     case 50:
 
-        newBullet((*currentObject).x+nextx, (*currentObject).y+nexty, (*currentObject).direction);
+        newBullet((*currentObject).x+nextPoint.x, (*currentObject).y+nextPoint.y, (*currentObject).direction);
 
     case 500:
 
-        newMine((*currentObject).x+nextx, (*currentObject).y+nexty);
+        newMine((*currentObject).x+nextPoint.x, (*currentObject).y+nextPoint.y);
 
 
     case 42:            //To be completed...
@@ -372,99 +347,28 @@ int updatePlayer(object *currentObject)
 int updateBullet(object *currentObject)
 {
     int i;
+    point nextPoint = next(currentObject);
 
-    switch((*currentObject).direction)
+    for(i=0; i<objectNumber; i++)
     {
-    case 2:
-
-        for(i=0; i<objectNumber; i++)
+        if(((*currentObject).x + nextPoint.x ==object_list[i].x && (*currentObject).y + nextPoint.y==object_list[i].y))
         {
-            if(((*currentObject).x==object_list[i].x && (*currentObject).y+1==object_list[i].y) || ((*currentObject).x==object_list[i].x && (*currentObject).y==object_list[i].y))
+            if(object_list[i].type == 1)
             {
-                if(object_list[i].type == 1)
-                {
-                    destructor((*currentObject).objId);
-                    return 1;
-                }
-                else if(object_list[i].type == 2)
-                {
-                    --(object_list[i].hp);
-                    destructor((*currentObject).objId);
-                    return 1;
-                }
+                destructor((*currentObject).objId);
+                return 1;
+            }
+            else if(object_list[i].type == 2)
+            {
+                --(object_list[i].hp);
+                destructor((*currentObject).objId);
+                return 1;
             }
         }
-        ++(*currentObject).y;
-        return 0;
-    case 4:
-        for(i=0; i<objectNumber; i++)
-        {
-            if(((*currentObject).x-1==object_list[i].x && (*currentObject).y==object_list[i].y)  || ((*currentObject).x==object_list[i].x && (*currentObject).y==object_list[i].y))
-            {
-                if(object_list[i].type == 1)
-                {
-                    (*currentObject).direction=6;
-                    destructor((*currentObject).objId);
-                    return 1;
-                }
-                else if(object_list[i].type == 2)
-                {
-                    --(object_list[i].hp);
-                    destructor((*currentObject).objId);
-                    return 1;
-                }
-
-            }
-        }
-        --(*currentObject).x;
-        return 0;
-    case 6:
-        for(i=0; i<objectNumber; i++)
-        {
-            if(((*currentObject).x+1==object_list[i].x && (*currentObject).y==object_list[i].y)  || ((*currentObject).x==object_list[i].x && (*currentObject).y==object_list[i].y))
-            {
-                if(object_list[i].type == 1)
-                {
-                    (*currentObject).direction=4;
-                    destructor((*currentObject).objId);
-                    // printf("The destructor was triggered!\n");
-                    return 1;
-                }
-                else if(object_list[i].type == 2)
-                {
-                    --(object_list[i].hp);
-                    destructor((*currentObject).objId);
-                    return 1;
-                }
-            }
-        }
-        ++(*currentObject).x;
-        return 0;
-    case 8:
-        for(i=0; i<objectNumber; i++)
-        {
-            if(((*currentObject).x==object_list[i].x && (*currentObject).y-1==object_list[i].y)  || ((*currentObject).x==object_list[i].x && (*currentObject).y==object_list[i].y))
-            {
-                if(object_list[i].type == 1)
-                {
-                    (*currentObject).direction=2;
-                    destructor((*currentObject).objId);
-                    return 1;
-                }
-                else if(object_list[i].type == 2)
-                {
-                    --(object_list[i].hp);
-                    destructor((*currentObject).objId);
-                    return 1;
-                }
-            }
-        }
-        --(*currentObject).y;
-        return 0;
     }
-
-
+    ++(*currentObject).y;
     return 0;
+
 }
 
 int updateMine(object *currentObject)
@@ -481,6 +385,34 @@ int updateMine(object *currentObject)
     }
 
     return 0;
+}
+
+point next(object * currentObject)  //takes an object and works out its next position relative to it's current if it moves forward 1
+{
+    point n;
+
+    if((*currentObject).direction==2)
+    {
+        n.x=0;
+        n.y=1;
+    }
+    if((*currentObject).direction==4)
+    {
+        n.x=-1;
+        n.y=0;
+    }
+    if((*currentObject).direction==6)
+    {
+        n.x=1;
+        n.y=0;
+    }
+    if((*currentObject).direction==8)
+    {
+        n.x=0;
+        n.y=-1;
+    }
+
+    return n;
 }
 
 void newWall(int x, int y)

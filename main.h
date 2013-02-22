@@ -63,6 +63,8 @@ int updatePlayer(object *);
 int updateBullet(object *);
 int updateMine(object *);
 
+point next(object *);
+
 /*AI Stuff*/
 int greg(int,int,object *,int);
 int human(int,int,object *,int);
