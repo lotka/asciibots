@@ -66,9 +66,9 @@ int tito(int x,int y, object * me, int ask)
         {
             for(i=0; i<xsize; ++i)
             {
-                PRINT("%d", binaryMap[i][j]);
+                printf("%d", binaryMap[i][j]);
             }
-            PRINT("\n");
+            printf("\n");
         }
 */
     if((x != end.x) || (y != end.y))

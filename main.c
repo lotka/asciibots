@@ -20,12 +20,13 @@ object *object_list;   //Stores all objects except those of type ai_t.
 ai_t *ai_list; //stores the ais that can be used in the game
 int aiNumber = 0;
 
-int main()
+int main(int argc, char **argv)
 {
-    /*Any ai you want to be able to access must be entered here!*/
-    newAi_t("greg",&greg);
-    newAi_t("human",&human); //is this really a good idea?
-    newAi_t("tito",&tito);
+
+   /*Any ai you want to be able to access must be entered here!*/
+      newAi_t("greg",&greg);
+   // newAi_t("human",&human); //is this really a good idea?
+  //  newAi_t("tito",&tito);
 
 #ifndef _WIN32
     initscr();
@@ -40,7 +41,7 @@ int main()
 
     do
     {
-        PRINT("Do you want to load a map from file (y/n) (default is basic square):");
+        printf("Do you want to load a map from file (y/n) (default is basic square):");
         c = getchar();
         d = getchar(); //needed to eat the '\0' that gets entered
     }
@@ -55,6 +56,7 @@ int main()
         defaultMap();
     }
 
+
     map = malloc((xsize+2)*sizeof(char *)); //this has to go here because the map gets printed before ai location selection happens
     for(i=0; i<xsize+2; ++i)
     {
@@ -62,10 +64,10 @@ int main()
     }
 
     reprintMap();
-    PRINT("Available ais are :\n");
+    printf("Available ais are :\n");
     for(i=0; i<aiNumber; ++i)
     {
-        PRINT("%s\n",ai_list[i].name);
+        printf("%s\n",ai_list[i].name);
     }
 
     for(i=0; i<objectNumber; ++i)
@@ -76,7 +78,7 @@ int main()
             foundName = 0;
             while(foundName == 0)
             {
-                PRINT("Please enter the ai to go in position (%d,%d)\n(\"none\" to leave space empty)):",object_list[i].x,object_list[i].y);
+                printf("Please enter the ai to go in position (%d,%d)\n(\"none\" to leave space empty)):",object_list[i].x,object_list[i].y);
                 scanf("%s",enteredName);
                 getchar();
                 if(strcmp(nonep,enteredName) == 0) //logic required to leave the space empty
@@ -100,36 +102,27 @@ int main()
                 newPlayer(object_list[i].x,object_list[i].y,ai_list[j].ai,object_list[i].direction); //add a player with the chosen ai to the game
             }
 
-            //PRINT("%d\n",object_list[i].direction);
+            //printf("%d\n",object_list[i].direction);
             destructor(i); // get rid of the starting location object
             --i; //this IS needed and explains some issues we have been having with destructor
         }
     }
     free(ai_list); //not needed any more
+
     reprintMap();
 
-    /* Main Game Loop */
-    while( 1 )
-    {
-        for(i=0; i<objectNumber; ++i)
-        {
-            if(update(&object_list[i]) == 1)//Allows objects to do stuff
-            {
-                --i;
-            }
-        }
-        reprintMap();
-#ifdef _WIN32
-        Sleep(50);
-        system("cls");
-#else
-        //PRINT("press Q to quit\n");
-        refresh();
-        mvprintw(0,0, "");
-        usleep(100000);
-#endif
-    }
+	// init GLUT and create Window
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitWindowPosition(100,100);
+	glutInitWindowSize(320,320);
+	glutCreateWindow("asciibots");
 
+	// register callbacks
+	glutDisplayFunc(renderScene);
+    glutIdleFunc(renderScene);
+	// enter GLUT event processing cycle
+	glutMainLoop();
 
 #ifndef _WIN32
     endwin();
@@ -164,12 +157,12 @@ void reprintMap()
     {
         for(j=0; j<xsize; ++j)
         {
-            PRINT("%c", map[j][i]);
+            printf("%c", map[j][i]);
         }
-        PRINT("\n");
+        printf("\n");
     }
 
-    PRINT("objectNumber = %d\n", objectNumber);
+    printf("objectNumber = %d\n", objectNumber);
 }
 
 void loadMap()
@@ -193,7 +186,7 @@ void loadMap()
 
     while(fileP == NULL)
     {
-        PRINT("Please enter the name of the map:");
+        printf("Please enter the name of the map:");
         scanf("%s",fileName);
         getchar();
         fileP = fopen(fileName,"r");
@@ -229,8 +222,8 @@ void loadMap()
 void defaultMap()
 {
     int i;
-    xsize = 25;
-    ysize = 25;
+    xsize = 32;
+    ysize = 18;
     for(i=0; i<xsize; ++i)
     {
         newWall(i,0);
@@ -283,9 +276,6 @@ int updatePlayer(object *currentObject)
     if((*currentObject).hp <= 0)
     {
         destructor((*currentObject).objId);
-#ifdef _WIN32
-        Beep(500,100);
-#endif
         return 1;
     }
 
@@ -533,5 +523,4 @@ void destructor(int n)
     --objectNumber;
     object_list = realloc(object_list, (objectNumber)*sizeof(object));
 }
-
 

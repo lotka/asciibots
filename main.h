@@ -1,17 +1,18 @@
 #include <stdio.h>
-#include <stdlib.h>
 
+#include <windows.h>
+
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
+#include <stdlib.h>
 #define BULLET_SYMBOL '.'
 #define WALL_SYMBOL '²'
 #define SPACE_SYMBOL ' '
 
-#ifdef _WIN32
-	#include <windows.h>
-	#define PRINT(...) printf(__VA_ARGS__)
-#else
-	#include <ncurses.h>
-	#define PRINT(...) printw(__VA_ARGS__)
-#endif
 
 /* Objects */
 typedef struct obj
@@ -56,6 +57,14 @@ void newMine(int , int );
 void newAi_t(char *,int (*)(int, int,struct obj *,int));
 void newStartingPosition(int ,int,int);
 void destructor(int);
+
+/* Glut */
+void renderScene(void);
+void draw(object * obj);
+void drawWall(double X, double Y);
+void drawBullet(double X, double Y);
+void drawPlayer(double X, double Y);
+
 
 /* Object updating */
 int update(object *);

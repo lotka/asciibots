@@ -19,9 +19,9 @@ int human(int x,int y, object * me, int ask)
         {
             for(i=0; i<xsize; ++i)
             {
-                PRINT("%c", map[i][j]);
+                printf("%c", map[i][j]);
             }
-            PRINT("\n");
+            printf("\n");
         }
 
        printf("\nEnter command for player:");

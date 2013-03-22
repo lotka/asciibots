@@ -64,3 +64,30 @@
 	"main.h"
 	<limits.h>
 
+1363911624 source:c:\users\luka\desktop\glut_asciibots\asciibots\greg.c
+	"main.h"
+	<math.h>
+
+1363915570 c:\users\luka\desktop\glut_asciibots\asciibots\main.h
+	<stdio.h>
+	<windows.h>
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<stdlib.h>
+
+1363912076 source:c:\users\luka\desktop\glut_asciibots\asciibots\human.c
+	"main.h"
+
+1363915570 source:c:\users\luka\desktop\glut_asciibots\asciibots\main.c
+	"main.h"
+
+1363912076 source:c:\users\luka\desktop\glut_asciibots\asciibots\tito.c
+	"main.h"
+
+1363911624 source:c:\users\luka\desktop\glut_asciibots\asciibots\dijkstra.c
+	"main.h"
+	<limits.h>
+
+1363918019 source:c:\users\luka\desktop\glut_asciibots\asciibots\glut.c
+	"main.h"
+
